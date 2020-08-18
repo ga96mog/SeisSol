@@ -144,6 +144,14 @@ void seissol::LoopStatistics::printSummary(MPI_Comm comm) {
     }
 
     logInfo(rank) << "Total time spent in compute kernels:" << totalTime;
+
+    //code by adrian
+    double time_DR = 0;
+    for(std::vector<Sample>::iterator it =  m_times[2].begin() ; it !=  m_times[2].end(); ++it){
+      //logInfo(rank) << "time spend in DR iteration: "<< it->numIters  << " time: "<< it->time;
+      time_DR += it->time;
+    }
+    logInfo(rank) << "Total time spend in DR iteration: " << time_DR;
   }
 }
 #endif
