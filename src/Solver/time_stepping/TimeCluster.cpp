@@ -252,6 +252,7 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
 
 
   //TODO: delete these if not required for debugging anymore:
+  /*
   seissol::model::IsotropicWaveSpeeds*  waveSpeedsPlus                                                    = layerData.var(m_dynRup->waveSpeedsPlus);
   seissol::model::IsotropicWaveSpeeds*  waveSpeedsMinus                                                   = layerData.var(m_dynRup->waveSpeedsMinus);
   FrictionData*                         frictionData                                                      = layerData.var(m_dynRup->frictionData);
@@ -285,11 +286,11 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
 
   alignas(ALIGNMENT) real QInterpolatedPlus[layerData.getNumberOfCells()][CONVERGENCE_ORDER][tensor::QInterpolated::size()];
   alignas(ALIGNMENT) real QInterpolatedMinus[layerData.getNumberOfCells()][CONVERGENCE_ORDER][tensor::QInterpolated::size()];
-  alignas(ALIGNMENT) real imposedStatePlusTest[layerData.getNumberOfCells()][tensor::QInterpolated::size()];
-  alignas(ALIGNMENT) real imposedStateMinusTest[layerData.getNumberOfCells()][tensor::QInterpolated::size()];
+  //alignas(ALIGNMENT) real imposedStatePlusTest[layerData.getNumberOfCells()][tensor::QInterpolated::size()];
+  //alignas(ALIGNMENT) real imposedStateMinusTest[layerData.getNumberOfCells()][tensor::QInterpolated::size()];
 
   //Code added by ADRIAN
-    //TODO: outsource this to initialization:
+    /*
     const size_t numberOfPoints = tensor::QInterpolated::Shape[0];
     if(m_friction_data.initialized == false){
         //e_interoperability.getTmpFrictionData(m_friction_data);
@@ -297,6 +298,8 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
     }
     m_friction_data.tmpFrictionOnly = true;
     m_friction_data.function_call++;
+*/
+
 
     //std::cout << "func call: "<<  m_friction_data.function_call << std::endl;
 //    std::cout << "data: "<< my_data[0] << std::endl;
@@ -407,9 +410,9 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
 
   } //End layerData.getNumberOfCells()-loop
 
-  //seissol::dr::fr_law::FL_2 *FL2 = dynamic_cast<seissol::dr::fr_law::FL_2*>(m_FrictonLaw);
-  //FL2->evaluate2(layerData, m_dynRup, QInterpolatedPlus, QInterpolatedMinus, m_fullUpdateTime, m_dynamicRuptureKernel.timeWeights, DeltaT);
-  m_FrictonLaw->evaluate(layerData, m_dynRup, QInterpolatedPlus, QInterpolatedMinus, m_fullUpdateTime, m_dynamicRuptureKernel.timeWeights, DeltaT);
+  seissol::dr::fr_law::FL_2 *FL2 = dynamic_cast<seissol::dr::fr_law::FL_2*>(m_FrictonLaw);
+  FL2->evaluate2(layerData, m_dynRup, QInterpolatedPlus, QInterpolatedMinus, m_fullUpdateTime, m_dynamicRuptureKernel.timeWeights, DeltaT);
+  //m_FrictonLaw->evaluate(layerData, m_dynRup, QInterpolatedPlus, QInterpolatedMinus, m_fullUpdateTime, m_dynamicRuptureKernel.timeWeights, DeltaT);
 
   //m_DrOutput->tiePointers(layerData, m_dynRup, e_interoperability/*+ DrLtsTree, + faultWriter*/); // pass ptrs of the first cluster    // inside of a compute loop
   m_loopStatistics->end(m_regionComputeDynamicRupture, layerData.getNumberOfCells());
