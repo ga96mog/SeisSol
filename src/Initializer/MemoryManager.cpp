@@ -681,7 +681,23 @@ bool seissol::initializers::requiresNodalFlux(FaceType f) {
 
 //added by adrian
 void seissol::initializers::MemoryManager::initializeFrictionFactory(Friction_law_type FrictionLaw) {
-    dr::factory::AbstractFactory *Factory = seissol::dr::factory::getFactory(FrictionLaw);
+
+  dr::factory::AbstractFactory *Factory = nullptr;
+  try {
+    // reading input provided by parameters.par
+    YAML::Node DynamicRupture = m_inputParams["dynamicrupture"];
+    int FrictionLawID = DynamicRupture["fl"].as<int>();
+    bool InstantHealing = (DynamicRupture["inst_healing"]) ? true : false;
+    std::cout << "Given Friction law: " << FrictionLawID << std::endl;
+    std::cout << "Given Instant Healing: " << std::boolalpha << InstantHealing << std::endl;
+
+    Factory = seissol::dr::factory::getFactory(FrictionLaw);
     std::tie(m_dynRup, m_DrInitializer, m_FrictonLaw, m_DrOutput) = Factory->produce();
     delete Factory;    // prepare the data
+  }
+  catch (const std::exception& Error) {
+    std::cerr << Error.what() << std::endl;
+    delete Factory;
+    throw Error;
+  }
 }

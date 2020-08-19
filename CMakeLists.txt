@@ -145,6 +145,8 @@ target_link_libraries(SeisSol-lib PUBLIC PkgConfig::ImpalaJIT)
 target_include_directories(SeisSol-lib PUBLIC ${ImpalaJIT_INCLUDE_DIRS})
 
 
+target_include_directories(SeisSol-lib PUBLIC ./submodules/fty/include)
+
 # In the future, we should maybe use find_package(Eigen3).
 
 # todo: if parallelization == omp/hybrid

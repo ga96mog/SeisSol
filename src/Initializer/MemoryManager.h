@@ -88,6 +88,7 @@
 
 //added by adrian
 #include <DynamicRupture/DR_factory.h>
+#include <yaml-cpp/yaml.h>
 
 namespace seissol {
   namespace initializers {
@@ -169,6 +170,8 @@ class seissol::initializers::MemoryManager {
     Boundary m_boundary;
 
     EasiBoundary m_easiBoundary;
+
+    YAML::Node m_inputParams;
 
     /**
      * Corrects the LTS Setups (buffer or derivatives, never both) in the ghost region
@@ -317,6 +320,10 @@ class seissol::initializers::MemoryManager {
     }
     inline seissol::dr::output::Base* getDrOutput() {
         return m_DrOutput;
+    }
+
+    void setInputParams(const YAML::Node& Params) {
+      m_inputParams = Params;
     }
 };
 
