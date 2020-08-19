@@ -7,6 +7,7 @@
 
 #include <c++/8.3.0/iostream>
 #include "DR_math.h"
+#include <yaml-cpp/yaml.h>
 
 
 namespace seissol {
@@ -27,6 +28,7 @@ class seissol::dr::fr_law::Base {
 public:
   //TODO: rename e.g. BaseSolverFL
   virtual ~Base() {}
+  void setInputParam(const YAML::Node& Param) {m_InputParam = Param;}
 
 protected:
   static constexpr int numberOfPoints =  tensor::QInterpolated::Shape[0];// DISC%Galerkin%nBndGP
@@ -35,6 +37,7 @@ protected:
   //TODO: implement padded calculation
   //static constexpr int numOfPointsPadded = numberOfPoints;
   static constexpr int numOfPointsPadded = init::QInterpolated::Stop[0];
+  YAML::Node m_InputParam;
 
   /*
    * output:
