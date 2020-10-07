@@ -253,6 +253,11 @@ public:
                          real timeWeights[CONVERGENCE_ORDER],
                          real DeltaT[CONVERGENCE_ORDER]) = 0;
 
+  virtual void evaluateFast(seissol::initializers::Layer&  layerData,
+                            seissol::initializers::DynamicRupture *dynRup,
+                            real fullUpdateTime,
+                            kernels::DynamicRupture &dynamicRuptureKernel,
+                            GlobalData const* globalData){};
 
   void dynamicRuptureCalc(seissol::initializers::Layer&  layerData,
                           seissol::initializers::DynamicRupture *dynRup,

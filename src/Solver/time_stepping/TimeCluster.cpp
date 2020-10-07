@@ -240,8 +240,7 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
   SCOREP_USER_REGION( "computeDynamicRupture", SCOREP_USER_REGION_TYPE_FUNCTION )
   m_loopStatistics->begin(m_regionComputeDynamicRupture);
 
-  seissol::dr::fr_law::LinearSlipWeakeningSolverFL2 *FL2 = dynamic_cast< seissol::dr::fr_law::LinearSlipWeakeningSolverFL2 *>(m_FrictonLaw);
-  FL2->evaluateFast(layerData, m_dynRup, m_fullUpdateTime, m_dynamicRuptureKernel, m_globalData);
+  m_FrictonLaw->evaluateFast(layerData, m_dynRup, m_fullUpdateTime, m_dynamicRuptureKernel, m_globalData);
 
 
   /*

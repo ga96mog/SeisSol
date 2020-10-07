@@ -137,7 +137,6 @@ public:
       }//lts-face loop
       layerLtsFaceToMeshFace += it->getNumberOfCells();
     }//leaf_iterator loop
-    std::cout << "init DR for Base\n";
   }
 
 };

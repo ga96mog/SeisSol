@@ -269,7 +269,7 @@ public:
                             seissol::initializers::DynamicRupture *dynRup,
                             real fullUpdateTime,
                             kernels::DynamicRupture &dynamicRuptureKernel,
-                            GlobalData const* globalData) {
+                            GlobalData const* globalData) override {
 
     DRFaceInformation*                    faceInformation                                                   = layerData.var(dynRup->faceInformation);
     DRGodunovData*                        godunovData                                                       = layerData.var(dynRup->godunovData);
