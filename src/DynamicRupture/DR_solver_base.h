@@ -36,6 +36,32 @@ public:
   }
 
 
+/*
+* copies all parameters from the DynamicRupture LTS to the local attributes
+*/
+virtual void copyLtsTreeToLocal(seissol::initializers::Layer&  layerData,
+                              seissol::initializers::DynamicRupture *dynRup,
+                              real fullUpdateTime){
+  impAndEta                                     = layerData.var(dynRup->impAndEta);
+  initialStressInFaultCS                        = layerData.var(dynRup->initialStressInFaultCS);
+  cohesion                                      = layerData.var(dynRup->cohesion);
+  mu                                            = layerData.var(dynRup->mu);
+  slip                                          = layerData.var(dynRup->slip);
+  slip1                                         = layerData.var(dynRup->slip1);
+  slip2                                         = layerData.var(dynRup->slip2);
+  locSlipRate                                   = layerData.var(dynRup->locSlipRate);
+  slipRate1                                     = layerData.var(dynRup->slipRate1);
+  slipRate2                                     = layerData.var(dynRup->slipRate2);
+  rupture_time                                  = layerData.var(dynRup->rupture_time);
+  RF                                            = layerData.var(dynRup->RF);
+  peakSR                                        = layerData.var(dynRup->peakSR);
+  tracXY                                        = layerData.var(dynRup->tracXY);
+  tracXZ                                        = layerData.var(dynRup->tracXZ);
+  imposedStatePlus                              = layerData.var(dynRup->imposedStatePlus);
+  imposedStateMinus                             = layerData.var(dynRup->imposedStateMinus);
+  m_fullUpdateTime                              = fullUpdateTime;
+}
+
 protected:
   static constexpr int numberOfPoints =  tensor::QInterpolated::Shape[0];// DISC%Galerkin%nBndGP
   //TODO: is init::QInterpolated::Start[0] always 0?
@@ -73,32 +99,6 @@ protected:
     real XYStressGP[CONVERGENCE_ORDER][numOfPointsPadded] = {{}};
     real XZStressGP[CONVERGENCE_ORDER][numOfPointsPadded] = {{}};
   };
-
-  /*
- * copies all parameters from the DynamicRupture LTS to the local attributes
- */
-  virtual void copyLtsTreeToLocal(seissol::initializers::Layer&  layerData,
-                                seissol::initializers::DynamicRupture *dynRup,
-                                real fullUpdateTime){
-    impAndEta                                     = layerData.var(dynRup->impAndEta);
-    initialStressInFaultCS                        = layerData.var(dynRup->initialStressInFaultCS);
-    cohesion                                      = layerData.var(dynRup->cohesion);
-    mu                                            = layerData.var(dynRup->mu);
-    slip                                          = layerData.var(dynRup->slip);
-    slip1                                         = layerData.var(dynRup->slip1);
-    slip2                                         = layerData.var(dynRup->slip2);
-    locSlipRate                                   = layerData.var(dynRup->locSlipRate);
-    slipRate1                                     = layerData.var(dynRup->slipRate1);
-    slipRate2                                     = layerData.var(dynRup->slipRate2);
-    rupture_time                                  = layerData.var(dynRup->rupture_time);
-    RF                                            = layerData.var(dynRup->RF);
-    peakSR                                        = layerData.var(dynRup->peakSR);
-    tracXY                                        = layerData.var(dynRup->tracXY);
-    tracXZ                                        = layerData.var(dynRup->tracXZ);
-    imposedStatePlus                              = layerData.var(dynRup->imposedStatePlus);
-    imposedStateMinus                             = layerData.var(dynRup->imposedStateMinus);
-    m_fullUpdateTime                              = fullUpdateTime;
-  }
 
   /*
    * output:
@@ -257,6 +257,11 @@ public:
                          real (*QInterpolatedMinus)[CONVERGENCE_ORDER][tensor::QInterpolated::size()],
                          real fullUpdateTime,
                          real timeWeights[CONVERGENCE_ORDER]) = 0;
+
+  virtual void evaluateCurrentFace(real QInterpolatedPlus[CONVERGENCE_ORDER][seissol::tensor::QInterpolated::size()],
+                              real QInterpolatedMinus[CONVERGENCE_ORDER][tensor::QInterpolated::size()],
+                              real timeWeights[CONVERGENCE_ORDER],
+                              unsigned int ltsFace){};
 
   /*
    * compute the DeltaT from the current timePoints

@@ -34,9 +34,11 @@ protected:
   bool                    (*DS)[numOfPointsPadded];
   real                    (*dynStress_time)[numOfPointsPadded];
 
+public:
   /*
    * copies all parameters from the DynamicRupture LTS to the local attributes
    */
+
   void copyLtsTreeToLocal(seissol::initializers::Layer&  layerData,
                           seissol::initializers::DynamicRupture *dynRup, real fullUpdateTime) override {
     //first copy all Variables from the Base Lts dynRup tree
@@ -51,6 +53,7 @@ protected:
     dynStress_time                                = layerData.var(ConcreteLts->dynStress_time);
   }
 
+protected:
   /*
    * compute the fault strength
    */
@@ -224,6 +227,66 @@ public:
           faultStresses, timeWeights, ltsFace);
     }//End of Loop over Faces
   }//End of Function evaluate
+
+
+  virtual void evaluateCurrentFace(real QInterpolatedPlus[CONVERGENCE_ORDER][tensor::QInterpolated::size()],
+                              real QInterpolatedMinus[CONVERGENCE_ORDER][tensor::QInterpolated::size()],
+                              real timeWeights[CONVERGENCE_ORDER],
+                              unsigned int ltsFace) override {
+
+    //initialize struct for in/outputs stresses
+    FaultStresses faultStresses{};
+
+    //declare local variables
+    dynamicRupture::kernel::resampleParameter resampleKrnl;
+    resampleKrnl.resampleM = init::resample::Values;
+
+    std::array<real, numOfPointsPadded> outputSlip{0};
+    std::array<real, numOfPointsPadded> stateVariablePsi{0};
+    std::array<real, numOfPointsPadded> Strength{0};
+
+    precomputeStressFromQInterpolated(faultStresses, QInterpolatedPlus, QInterpolatedMinus, ltsFace);
+
+    for (int iTimeGP = 0; iTimeGP < CONVERGENCE_ORDER; iTimeGP++) {  //loop over time steps
+      calcStrengthHook(Strength, faultStresses, iTimeGP, ltsFace);
+
+      calcSlipRateAndTraction(Strength, faultStresses, iTimeGP , ltsFace);
+
+      //function g, output: stateVariablePsi & outputSlip
+      calcStateVariableHook(stateVariablePsi, outputSlip, resampleKrnl, iTimeGP, ltsFace);
+
+      //function f, output: calculated mu
+      frictionFunctionHook(stateVariablePsi, ltsFace);
+
+      //instantaneous healing option Reset Mu and Slip
+      if (m_Params->IsInstaHealingOn == true) {
+        instantaneousHealing(ltsFace);
+      }
+    }//End of iTimeGP-Loop
+
+    // output rupture front
+    // outside of iTimeGP loop in order to safe an 'if' in a loop
+    // this way, no subtimestep resolution possible
+    outputRuptureFront(ltsFace);
+
+    //output time when shear stress is equal to the dynamic stress after rupture arrived
+    //currently only for linear slip weakening
+    outputDynamicStress(ltsFace);
+
+    //output peak slip rate
+    calcPeakSlipRate(ltsFace);
+
+    //---compute and store slip to determine the magnitude of an earthquake ---
+    //    to this end, here the slip is computed and averaged per element
+    //    in calc_seissol.f90 this value will be multiplied by the element surface
+    //    and an output happened once at the end of the simulation
+    calcAverageSlip(outputSlip, ltsFace);
+
+    postcomputeImposedStateFromNewStress(
+        QInterpolatedPlus, QInterpolatedMinus,
+        faultStresses, timeWeights, ltsFace);
+
+  }
 
 
 };//End of Class
