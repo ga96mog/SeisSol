@@ -955,7 +955,7 @@ CONTAINS
     CHARACTER(LEN=600)                     :: ModelFileName
     REAL                                   :: RS_sv0, XRef, YRef, ZRef, GPwise,  &
                                               Mu_SNuc_ini, H_Length, RS_f0, &
-                                              RS_sr0, RS_b, RS_iniSlipRate1, &
+                                              RS_sr0, RS_sl0, RS_b, RS_a, RS_iniSlipRate1, &
                                               RS_iniSlipRate2, v_star, L, t_0, Mu_W, &
                                               alpha_th, rho_c, TP_lambda, IniTemp, IniPressure, &
                                               NucRS_sv0, r_s, energy_rate_printtimeinterval
@@ -965,7 +965,7 @@ CONTAINS
                                                 RS_sv0, XRef, YRef, ZRef,refPointMethod, FileName_BackgroundStress, &
                                                 GPwise, inst_healing, &
                                                 Mu_SNuc_ini, H_Length, RS_f0, &
-                                                RS_sr0, RS_b, RS_iniSlipRate1, RS_iniSlipRate2, v_star, &
+                                                RS_sr0, RS_sl0, RS_b, RS_a, RS_iniSlipRate1, RS_iniSlipRate2, v_star, &
                                                 thermalPress, alpha_th, rho_c, TP_lambda, IniTemp, IniPressure, &
                                                 L, t_0, Mu_W, NucRS_sv0, r_s, RF_output_on, DS_output_on, &
                                                 OutputPointType, magnitude_output_on, energy_rate_output_on, energy_rate_printtimeinterval,  &
@@ -994,6 +994,8 @@ CONTAINS
     RS_f0 = 0
     RS_sr0 = 0
     RS_b = 0
+    RS_a = 0
+    RS_sl0 = 0
     RS_iniSlipRate1 = 0
     RS_iniSlipRate2 = 0
     v_star = 0
@@ -1079,6 +1081,11 @@ CONTAINS
              DISC%DynRup%RS_iniSlipRate2 = RS_iniSlipRate2! V_ini2, initial sliding velocity
              DISC%DynRup%t_0      = t_0       ! forced rupture decay time
              DISC%DynRup%ThermalPress = thermalPress !switches TP on (1) or off(0)
+
+             DISC%DynRup%NucRS_sv0 = NucRS_sv0      !/ fix this in Master Branch
+             DISC%DynRup%RS_a = RS_a                !/ fix this in master branch
+             DISC%DynRup%RS_sl0 = RS_sl0            !/ fix this in master branch
+
              IF (DISC%DynRup%ThermalPress.EQ.1) THEN !additional parameters
                  logInfo0(*) 'Thermal pressurization assumed'
                  !physical

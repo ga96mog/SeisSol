@@ -242,7 +242,6 @@ MODULE ini_model_DR_mod
 
     CASE(3,4,7,101,103)
       ALLOCATE(  DISC%DynRup%RS_a_array(DISC%Galerkin%nBndGP, MESH%Fault%nSide)        )
-      DISC%DynRup%RS_sl0 = 0.4
       call c_interoperability_addFaultParameter("rs_a" // c_null_char, DISC%DynRup%RS_a_array)
       if (EQN%FL == 103) then
         nucleationParameterizedByTraction = c_interoperability_nucleationParameterizedByTraction(trim(DISC%DynRup%ModelFileName) // c_null_char)    
@@ -492,9 +491,9 @@ MODULE ini_model_DR_mod
           CALL TrafoChiTau2XiEtaZeta(xi,eta,zeta,chi,tau,iSide,0)
           CALL TetraTrafoXiEtaZeta2XYZ(xGp,yGp,zGp,xi,eta,zeta,xV,yV,zV)
           !
-          EQN%IniStateVar(i,iBndGP) = DISC%DynRup%NucRS_sv0
-          !EQN%IniStateVar(i,iBndGP) = DISC%DynRup%RS_sl0/DISC%DynRup%RS_sr0*EXP((sstress/(nstress*DISC%DynRup%RS_b))-DISC%DynRup%RS_f0/DISC%DynRup%RS_b-DISC%DynRup%RS_a_array(iBndGP,i)/DISC%DynRup%RS_b*LOG(iniSlipRate/DISC%DynRup%RS_sr0))
-          X2  = iniSlipRate*0.5/DISC%DynRup%RS_sr0 * EXP((DISC%DynRup%RS_f0 + DISC%DynRup%RS_b*LOG(DISC%DynRup%RS_sr0*EQN%IniStateVar(i,iBndGP)/DISC%DynRup%RS_sl0)) / DISC%DynRup%RS_a)
+          EQN%IniStateVar(iBndGP,i) = DISC%DynRup%NucRS_sv0
+          !EQN%IniStateVar(iBndGP,i) = DISC%DynRup%RS_sl0/DISC%DynRup%RS_sr0*EXP((sstress/(nstress*DISC%DynRup%RS_b))-DISC%DynRup%RS_f0/DISC%DynRup%RS_b-DISC%DynRup%RS_a_array(iBndGP,i)/DISC%DynRup%RS_b*LOG(iniSlipRate/DISC%DynRup%RS_sr0))
+          X2  = iniSlipRate*0.5/DISC%DynRup%RS_sr0 * EXP((DISC%DynRup%RS_f0 + DISC%DynRup%RS_b*LOG(DISC%DynRup%RS_sr0*EQN%IniStateVar(iBndGP,i)/DISC%DynRup%RS_sl0)) / DISC%DynRup%RS_a)
           EQN%IniMu(iBndGP,i)=DISC%DynRup%RS_a * LOG(X2 + SQRT(X2**2 + 1.0))
 
       ENDDO ! iBndGP
@@ -569,11 +568,11 @@ MODULE ini_model_DR_mod
           CALL TrafoChiTau2XiEtaZeta(xi,eta,zeta,chi,tau,iSide,0)
           CALL TetraTrafoXiEtaZeta2XYZ(xGp,yGp,zGp,xi,eta,zeta,xV,yV,zV)
                    !
-          EQN%IniStateVar(i,iBndGP)= (DISC%DynRup%RS_sl0*(DISC%DynRup%RS_a*EQN%IniBulk_yy(i,iBndGP)*iniSlipRate &
+          EQN%IniStateVar(iBndGP,i)= (DISC%DynRup%RS_sl0*(DISC%DynRup%RS_a*EQN%IniBulk_yy(i,iBndGP)*iniSlipRate &
               + (iniSlipRate + DISC%DynRup%RS_sr0)*(DISC%DynRup%RS_f0*EQN%IniBulk_yy(i,iBndGP)-EQN%IniShearXY(i,iBndGP)))) &
               / (DISC%DynRup%RS_a*EQN%IniBulk_yy(i,iBndGP)*iniSlipRate-(iniSlipRate + DISC%DynRup%RS_sr0) &
               * (DISC%DynRup%RS_b*EQN%IniBulk_yy(i,iBndGP)-DISC%DynRup%RS_f0*EQN%IniBulk_yy(i,iBndGP)+EQN%IniShearXY(i,iBndGP)))
-          EQN%IniMu(iBndGP,i)=DISC%DynRup%RS_f0+DISC%DynRup%RS_a*iniSlipRate/(iniSlipRate+DISC%DynRup%RS_sr0)-DISC%DynRup%RS_b*EQN%IniStateVar(i,iBndGP)/(EQN%IniStateVar(i,iBndGP)+DISC%DynRup%RS_sl0)
+          EQN%IniMu(iBndGP,i)=DISC%DynRup%RS_f0+DISC%DynRup%RS_a*iniSlipRate/(iniSlipRate+DISC%DynRup%RS_sr0)-DISC%DynRup%RS_b*EQN%IniStateVar(iBndGP,i)/(EQN%IniStateVar(iBndGP,i)+DISC%DynRup%RS_sl0)
       ENDDO ! iBndGP
 
   ENDDO !    MESH%Fault%nSide
@@ -646,9 +645,9 @@ MODULE ini_model_DR_mod
           CALL TrafoChiTau2XiEtaZeta(xi,eta,zeta,chi,tau,iSide,0)
           CALL TetraTrafoXiEtaZeta2XYZ(xGp,yGp,zGp,xi,eta,zeta,xV,yV,zV)
                !
-          EQN%IniStateVar(i,iBndGP) = (DISC%DynRup%RS_sl0/DISC%DynRup%RS_sr0) * EXP((-EQN%IniShearXY(i,iBndGP)/EQN%IniBulk_yy(i,iBndGP)-DISC%DynRup%RS_f0-DISC%DynRup%RS_a_array(iBndGP,i)*LOG(iniSlipRate/DISC%DynRup%RS_sr0))/DISC%DynRup%RS_b)
+          EQN%IniStateVar(iBndGP,i) = (DISC%DynRup%RS_sl0/DISC%DynRup%RS_sr0) * EXP((-EQN%IniShearXY(i,iBndGP)/EQN%IniBulk_yy(i,iBndGP)-DISC%DynRup%RS_f0-DISC%DynRup%RS_a_array(iBndGP,i)*LOG(iniSlipRate/DISC%DynRup%RS_sr0))/DISC%DynRup%RS_b)
           ! ASINH(X)=LOG(X+SQRT(X^2+1))
-          tmp  = iniSlipRate*0.5/DISC%DynRup%RS_sr0 * EXP((DISC%DynRup%RS_f0 + DISC%DynRup%RS_b*LOG(DISC%DynRup%RS_sr0*EQN%IniStateVar(i,iBndGP)/DISC%DynRup%RS_sl0)) / DISC%DynRup%RS_a_array(iBndGP,i))
+          tmp  = iniSlipRate*0.5/DISC%DynRup%RS_sr0 * EXP((DISC%DynRup%RS_f0 + DISC%DynRup%RS_b*LOG(DISC%DynRup%RS_sr0*EQN%IniStateVar(iBndGP,i)/DISC%DynRup%RS_sl0)) / DISC%DynRup%RS_a_array(iBndGP,i))
           EQN%IniMu(iBndGP,i)=DISC%DynRup%RS_a_array(iBndGP,i) * LOG(tmp + SQRT(tmp**2 + 1.0))
 
       ENDDO ! iBndGP
