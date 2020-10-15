@@ -245,16 +245,15 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
   real**                                timeDerivativePlus                                                = layerData.var(m_dynRup->timeDerivativePlus);
   real**                                timeDerivativeMinus                                               = layerData.var(m_dynRup->timeDerivativeMinus);
 
-  //TODO: remove face and make it private for parallel region
-  alignas(ALIGNMENT) real QInterpolatedPlus[layerData.getNumberOfCells()][CONVERGENCE_ORDER][tensor::QInterpolated::size()];
-  alignas(ALIGNMENT) real QInterpolatedMinus[layerData.getNumberOfCells()][CONVERGENCE_ORDER][tensor::QInterpolated::size()];
+  alignas(ALIGNMENT) real QInterpolatedPlus[CONVERGENCE_ORDER][tensor::QInterpolated::size()];
+  alignas(ALIGNMENT) real QInterpolatedMinus[CONVERGENCE_ORDER][tensor::QInterpolated::size()];
 
   //Code added by ADRIAN
   m_FrictonLaw->computeDeltaT(m_dynamicRuptureKernel.timePoints);
   m_FrictonLaw->copyLtsTreeToLocal(layerData, m_dynRup, m_fullUpdateTime);
 
 #ifdef _OPENMP
-#pragma omp parallel for schedule(static) //private(QInterpolatedPlus,QInterpolatedMinus)
+#pragma omp parallel for schedule(static) private(QInterpolatedPlus,QInterpolatedMinus)
 #endif
   for (unsigned ltsFace = 0; ltsFace < layerData.getNumberOfCells(); ++ltsFace) {
     unsigned prefetchFace = (ltsFace < layerData.getNumberOfCells() - 1) ? ltsFace + 1 : ltsFace;
@@ -264,13 +263,13 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
                                                    &godunovData[ltsFace],
                                                     timeDerivativePlus[ltsFace],
                                                     timeDerivativeMinus[ltsFace],
-                                                    QInterpolatedPlus[ltsFace],
-                                                    QInterpolatedMinus[ltsFace],
+                                                    QInterpolatedPlus,
+                                                    QInterpolatedMinus,
                                                     timeDerivativePlus[prefetchFace],
                                                     timeDerivativeMinus[prefetchFace] );
 
-    m_FrictonLaw->evaluateCurrentFace(QInterpolatedPlus[ltsFace],
-                                      QInterpolatedMinus[ltsFace],
+    m_FrictonLaw->evaluateCurrentFace(QInterpolatedPlus,
+                                      QInterpolatedMinus,
                                       m_dynamicRuptureKernel.timeWeights,
                                       ltsFace);
   } //End layerData.getNumberOfCells()-loop
