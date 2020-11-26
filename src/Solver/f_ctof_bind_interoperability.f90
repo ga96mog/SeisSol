@@ -606,9 +606,6 @@ module f_ctof_bind_interoperability
       call c_f_pointer( i_domain,             l_domain)
       nBndGP = l_domain%DISC%Galerkin%nBndGP
 
-      !call c_f_pointer( i_InitialStressInFaultCS, l_InitialStressInFaultCS, [nBndGP,6])
-      !l_domain%EQN%InitialStressInFaultCS(:,:,iFace) = l_InitialStressInFaultCS(:,:)
-
       call c_f_pointer( i_InitialStressInFaultCS, l_InitialStressInFaultCS, [6,nBndGP])
       DO i = 1, 6
         l_domain%EQN%InitialStressInFaultCS(:,i,iFace) = l_InitialStressInFaultCS(i,:)
