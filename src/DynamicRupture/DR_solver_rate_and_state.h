@@ -347,7 +347,7 @@ public:
       real deltaStateVar[numberOfPoints],
       unsigned int ltsFace){
 
-    dynamicRupture::kernel::resampleParameter resampleKrnl;
+    dynamicRupture::kernel::resampleParameter resampleKrnl = {};
     resampleKrnl.resampleM = init::resample::Values;
     real resampledDeltaStateVar[numberOfPoints] = {0};
     resampleKrnl.resamplePar = deltaStateVar;
