@@ -458,15 +458,15 @@ module f_ctof_bind_interoperability
         call c_f_pointer( i_tracXY, l_tracXY, [nBndGP])
         call c_f_pointer( i_tracXZ, l_tracXZ, [nBndGP])
 
-        !DO iBndGP = 1, nBndGP
-        !  IF (  ABS(l_domain%DISC%DynRup%SlipRate1(iBndGP,i_face)  - l_slipRate1(iBndGP) ) > 0.00001) THEN
-        !    write(*,*) "slip rate is different "
-        !    write(*,*) "slip rate fortran " ,  l_domain%DISC%DynRup%SlipRate1(iBndGP,i_face)
-        !    write(*,*) "slip rate c++ " ,   l_slipRate1(iBndGP)
-        !    write(*,*) "fortran face " ,  i_face
-        !    write(*,*) "iBndGP " ,  iBndGP
-        !  ENDIF
-        !ENDDO
+        DO iBndGP = 1, nBndGP
+          IF (  ABS(l_domain%DISC%DynRup%TracXY(iBndGP,i_face)  - l_tracXY(iBndGP) ) > 0.01) THEN
+!            write(*,*) "traction is different "
+!            write(*,*) "traction fortran " ,  l_domain%DISC%DynRup%SlipRate1(iBndGP,i_face)
+!            write(*,*) "traction c++ " ,   l_slipRate1(iBndGP)
+!            write(*,*) "fortran face " ,  i_face
+!            write(*,*) "iBndGP " ,  iBndGP
+          ENDIF
+        ENDDO
 
 
         !copy to output
@@ -477,8 +477,9 @@ module f_ctof_bind_interoperability
         !l_domain%DISC%DynRup%SlipRate1(:,i_face)                    = l_slipRate1(:)
         !l_domain%DISC%DynRup%SlipRate2(:,i_face)                    = 3.0 !l_slipRate2(:)
         l_domain%DISC%DynRup%output_rupture_time(:,i_face)          = l_rupture_time(:) !l_domain%DISC%DynRup%rupture_time(:,i_face)
-        l_domain%DISC%DynRup%rupture_time(:,i_face)          = l_rupture_time(:)
+        l_domain%DISC%DynRup%rupture_time(:,i_face)                = l_rupture_time(:)
         l_domain%DISC%DynRup%output_PeakSR(:,i_face)                = l_PeakSR(:)       !l_domain%DISC%DynRup%PeakSR(:,i_face)
+
         l_domain%DISC%DynRup%TracXY(:,i_face)                       = l_tracXY(:)
         l_domain%DISC%DynRup%TracXZ(:,i_face)                       = l_tracXZ(:)
 
