@@ -59,8 +59,8 @@ public:
 
       //initialize local variables inside parallel face loop
       bool has_converged = false;
-      FaultStresses faultStresses;
-      real deltaStateVar[numberOfPoints];
+      FaultStresses faultStresses = {};
+      real deltaStateVar[numberOfPoints] = {0};
       std::array<real, numOfPointsPadded> tmpSlip{0};   //required for averageSlip calculation
       std::array<real, numOfPointsPadded> normalStress{0};
       std::array<real, numOfPointsPadded> TotalShearStressYZ{0};
@@ -349,7 +349,7 @@ public:
 
     dynamicRupture::kernel::resampleParameter resampleKrnl;
     resampleKrnl.resampleM = init::resample::Values;
-    real resampledDeltaStateVar[numberOfPoints];
+    real resampledDeltaStateVar[numberOfPoints] = {0};
     resampleKrnl.resamplePar = deltaStateVar;
     resampleKrnl.resampledPar = resampledDeltaStateVar;  //output from execute
     resampleKrnl.execute();
@@ -600,8 +600,8 @@ protected:
   }
 
 
-
 /*
+
 public:
   virtual void evaluate(seissol::initializers::Layer&  layerData,
                         seissol::initializers::DynamicRupture *dynRup,
@@ -628,7 +628,7 @@ public:
 
       //initialize local variables inside parallel face loop
       bool has_converged = false;
-      FaultStresses faultStresses;
+      FaultStresses faultStresses = {};
       dynamicRupture::kernel::resampleParameter resampleKrnl;
       resampleKrnl.resampleM = init::resample::Values;
       real resampledDeltaStateVar[numberOfPoints];
@@ -1005,7 +1005,7 @@ public:
 #endif
     for (unsigned ltsFace = 0; ltsFace < layerData.getNumberOfCells(); ++ltsFace) {
 
-      FaultStresses faultStresses{};
+      FaultStresses faultStresses = {};
 
       precomputeStressFromQInterpolated(faultStresses, QInterpolatedPlus[ltsFace], QInterpolatedMinus[ltsFace], ltsFace);
 
@@ -1196,7 +1196,7 @@ public:
 #endif
     for (unsigned ltsFace = 0; ltsFace < layerData.getNumberOfCells(); ++ltsFace) {
       //initialize struct for in/outputs stresses
-      FaultStresses faultStresses{};
+      FaultStresses faultStresses = {};
 
       //compute stresses from Qinterpolated
       precomputeStressFromQInterpolated(faultStresses, QInterpolatedPlus[ltsFace], QInterpolatedMinus[ltsFace], ltsFace);

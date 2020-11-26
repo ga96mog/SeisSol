@@ -291,15 +291,15 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
                                                     QInterpolatedMinus[face],
                                                     timeDerivativePlus[prefetchFace],
                                                     timeDerivativeMinus[prefetchFace] );
-
+/*
     // legacy code:
     //TODO remove - only for debugging:
     //int fortran_face = static_cast<int>(faceInformation[face].meshFace) + 1;
     e_interoperability.evaluateFrictionLaw( static_cast<int>(faceInformation[face].meshFace),
                                             QInterpolatedPlus[face],
                                             QInterpolatedMinus[face],
-                                            imposedStatePlus[face],
-                                            imposedStateMinus[face],
+                                            imposedStatePlusTest[face],
+                                            imposedStateMinusTest[face],
                                             m_fullUpdateTime,
                                             m_dynamicRuptureKernel.timePoints,
                                             m_dynamicRuptureKernel.timeWeights,
@@ -310,6 +310,7 @@ void seissol::time_stepping::TimeCluster::computeDynamicRupture( seissol::initia
   } //End layerData.getNumberOfCells()-loop
 
   m_FrictonLaw->evaluate(layerData, m_dynRup, QInterpolatedPlus, QInterpolatedMinus, m_fullUpdateTime, m_dynamicRuptureKernel.timeWeights);
+  m_DrOutput->tiePointers(layerData, m_dynRup, e_interoperability/*+ DrLtsTree, + faultWriter*/);
 
   m_loopStatistics->end(m_regionComputeDynamicRupture, layerData.getNumberOfCells());
 /*
@@ -992,7 +993,7 @@ void seissol::time_stepping::TimeCluster::updateFaultOutput() {
   Layers[0] = &(m_dynRupClusterData->child<Interior>());
 #endif
   for (auto Layer : Layers) {
-      m_DrOutput->tiePointers(*Layer, m_dynRup, e_interoperability/*+ DrLtsTree, + faultWriter*/);
+      //m_DrOutput->tiePointers(*Layer, m_dynRup, e_interoperability/*+ DrLtsTree, + faultWriter*/);
   }
 }
 
